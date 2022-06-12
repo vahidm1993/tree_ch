@@ -7,8 +7,6 @@ namespace Fusion
 {
 	namespace {
 		class ThreadAbortedException : public std::exception {
-		public:
-			ThreadAbortedException() = default;
 		};
 	}
 
@@ -86,7 +84,9 @@ namespace Fusion
 		if (m_thread)
 		{
 			m_abortThread = true;
-			m_thread->join();
+			if (m_thread->joinable()) {
+				m_thread->join();
+			}
 			delete m_thread;
 		}
 	}
@@ -145,8 +145,8 @@ namespace Fusion
 						for (int yy = 0; yy < ly[y]; yy++) {
 							for (int xx = 0; xx < lx[x]; xx++) {
 								int value = (int)imgPtr[px + xx + image->width() * (py + yy + image->height() * (pz + zz))];
-								if (element.min > value) element.min = value;
-								if (element.max < value) element.max = value;
+								element.min = std:min(element.min, value);
+								element.max = std:max(element.max, value);
 							}
 						}
 					}
@@ -252,10 +252,10 @@ namespace Fusion
 
 	const std::vector<int>& Octree::enumerate() {
 		m_cubesInside.clear();
-		Timer t;
+		Timer t; // I do not line one character variables unleass it is a counter
 		int num = enumerateChildren(0, 0, 0, 0);
 		LOG_DEBUG("Octree has " << num << " cubes");
-		return m_cubesInside;
+		return std::move(m_cubesInside);
 	}
 
 
