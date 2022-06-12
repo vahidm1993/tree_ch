@@ -252,7 +252,7 @@ namespace Fusion
 
 	const std::vector<int>& Octree::enumerate() {
 		m_cubesInside.clear();
-		Timer t; // I do not line one character variables unleass it is a counter
+		Timer t; // I do not like one character variables unless it is a counter
 		int num = enumerateChildren(0, 0, 0, 0);
 		LOG_DEBUG("Octree has " << num << " cubes");
 		return std::move(m_cubesInside);
