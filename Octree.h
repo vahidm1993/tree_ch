@@ -10,6 +10,7 @@
 #include <limits>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 namespace Fusion
 {
@@ -20,7 +21,7 @@ namespace Fusion
 		Octree(int minCubeSize);
 
 		/// Creates and fills the Octree in a background thread with given image and minimum cube size
-		Octree(MemImage* image, int minCubeSize);
+		Octree(MemImage* image, int minCubeSize); // I would not accept raw pointers. Use shared_ptr instead in this place and other similar places.
 
 		/// Destructor, deletes the Octree
 		~Octree();
@@ -74,8 +75,8 @@ namespace Fusion
 		int enumerateChildren(int layer, int px, int py, int pz);
 
 		/// For better readability, get the split between current and next layer
-		inline void getSplit(int layer, int& sx, int& sy, int& sz) {
-			sx = (int)m_gridX[layer + 1].size() / (int)m_gridX[layer].size();
+		inline void getSplit(int layer, int& sx, int& sy, int& sz) const {
+			sx = (int)m_gridX[layer + 1].size() / (int)m_gridX[layer].size(); // I would cast using static_cast in this place and any other similar places
 			sy = (int)m_gridY[layer + 1].size() / (int)m_gridY[layer].size();
 			sz = (int)m_gridZ[layer + 1].size() / (int)m_gridZ[layer].size();
 		}
@@ -91,8 +92,8 @@ namespace Fusion
 		double m_scale;							///< Scale for conversion to integer intensities
 		std::vector<int> m_cubesInside;			///< List of all cube coordinates classified as inside
 		int m_voxelsInside;						///< Number of voxels satisfying range condition
-		std::thread* m_thread;					///< Thread for background creation of octree
-		bool m_abortThread;						///< Flag whether to abort the computation 
+		std::thread* m_thread; // I would make it a unique_ptr					///< Thread for background creation of octree
+		std::atomic<bool> m_abortThread;						///< Flag whether to abort the computation 
 		bool m_usable;							///< The octree is filled and ready to use if true
 	};
 
